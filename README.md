@@ -1,6 +1,10 @@
 # Thermal Positional Encoding
 Source code for the paper ["Generalized Classification of Satellite Image Time Series with Thermal Positional Encoding"](https://openaccess.thecvf.com/content/CVPR2022W/EarthVision/html/Nyborg_Generalized_Classification_of_Satellite_Image_Time_Series_With_Thermal_Positional_CVPRW_2022_paper.html) by Joachim Nyborg, Charlotte Pelletier, and Ira Assent.
 
+We consider the problem of generalizing crop classifiers using satellite image time series across European regions. Our proposed method, Thermal Positonal Encoding (TPE), incorporate thermal time instead of calendar time to account for temporal shifts of crop growth timelines. 
+
+The calculation of thermal time (growing degree days) can be found in [`dataset.py`](https://github.com/jnyborg/tpe/blob/43068d55e859f93b4eabd6f865a05c69a8cd75c3/dataset.py#L157) and the implementation of TPE can be found in [`models/ltae.py`](https://github.com/jnyborg/tpe/blob/main/models/ltae.py).
+
 
 ## Requirements
 - PyTorch 1.10.0
