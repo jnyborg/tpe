@@ -159,37 +159,10 @@ class PixelSetData(data.Dataset):
                 (np.minimum(t_max, t_cap) + np.maximum(t_min, t_base)) / 2 - t_base, 0
             )
             gdd = np.cumsum(gdd, axis=0)
-
-            # fit sigmoid to GDD
-
-            # if t_min.mean() in lookup:
-            #     gdd = deepcopy(lookup[t_min.mean()])
-            # else:
-            #     t_base, t_cap = 0, 30
-            #     gdd = np.maximum(
-            #         (np.minimum(t_max, t_cap) + np.maximum(t_min, t_base)) / 2 - t_base, 0
-            #     )
-            #     gdd = np.cumsum(gdd, axis=0)
-            #     x = np.arange(gdd.shape[0])
-            #     p0 = [max(gdd), np.median(x),1,min(gdd)]
-            #     popt, _ = curve_fit(sigmoid, x, gdd, p0, method='dogbox')
-            #     gdd = sigmoid(x, *popt)
-            #     gdd = np.gradient(gdd)
-            #     lookup[t_min.mean()] = gdd
-
-
-
             gdd = gdd[date_positions]
-
-            # gdd = np.array([t_min, t_max]).T
             
             item = (parcel_path, date_positions, n_pixels, class_index, extra, gdd)
             instances.append(item)
-
-        # for crop_code in unknown_crop_codes:
-        #     print(
-        #         f"Parcels with crop code {crop_code} was not found in .yml class mapping and was assigned to unknown."
-        #     )
 
         return instances
 
@@ -377,104 +350,3 @@ class GroupByShapesBatchSampler(torch.utils.data.BatchSampler):
 
         # make sure that no batch is larger than batch size
         assert all(len(batch) <= self.batch_size for batch in self.batches)
-
-
-if __name__ == "__main__":
-    # classes = label_utils.get_classes("denmark")
-    classes = sorted(['corn', 'horsebeans', 'meadow', 'spring_barley', 'unknown', 'winter_barley', 'winter_rapeseed', 'winter_triticale', 'winter_wheat'])
-
-    # crop_type = 'winter_wheat'
-    # crop_type = 'spring_barley'
-    # classes = [crop_type]
-
-    from tqdm import tqdm
-    tiles = ['denmark/32VNH/2017', 'austria/33UVP/2017', 'france/31TCJ/2017', 'france/30TXT/2017']
-    # for tile in ['denmark/32VNH', 'france/30TXT', 'austria/33UVP']:
-    for tile in ['denmark/32VNH/2017', 'denmark/32VNH/2018', 'denmark/32VNH/2019', 'denmark/32VNH/2020']:
-        # dataset = PixelSetData("/media/data/timematch_l2a", [f"{tile}/2017"], classes)
-        # dataset = PixelSetData("/media/data/timematch_data", [tile], classes)
-        dataset = PixelSetData("/media/data/timematch_data", tiles, classes)
-        print(len(dataset))
-
-        exit()
-
-
-
-        labels = dataset.get_labels()
-
-        print(tile)
-        for (cls, count) in zip(*np.unique(labels, return_counts=True)):
-            print(classes[cls], count)
-        print()
-        continue
-
-        # ndvis = []
-        # gdds = []
-        # positions = None
-        # total_pixels, total_cloudy = 0, 0
-
-        # for i, sample in enumerate(tqdm(dataset)):
-        #     # print(sample['pixels'].max())
-        #     # continue
-
-        #     pixels = sample['pixels'] / (2**16-1)
-
-        #     if pixels.shape[1] == 11:
-        #         cloud_mask = pixels[:, 10]
-        #         no_cloud_mask = cloud_mask == 0  # (T, S)
-
-        #         total_pixels += pixels.shape[2]
-        #         total_cloudy += (cloud_mask > 0).sum(1)
-
-        #         pixels = np.moveaxis(pixels, 1, 0)  # (T, C, S) -> (C, T, S)
-        #         pixels = pixels * no_cloud_mask
-        #         with np.errstate(divide='ignore', invalid='ignore'):  # if only clouds, set to NaN
-        #             red = pixels[2, :].sum(1) / no_cloud_mask.sum(1)
-        #             nir = pixels[3, :].sum(1) / no_cloud_mask.sum(1)
-        #         with np.errstate(divide='ignore', invalid='ignore'):  # if only clouds, set to NaN
-        #             ndvi = (nir - red) / (nir + red)
-        #         ndvis.append(ndvi)
-        #         gdds.append(sample['gdd'])
-        #         if positions is None:
-        #             positions = sample['positions']
-        #     else:
-        #         red = pixels[:, 2].mean(1)
-        #         nir = pixels[:, 3].mean(1)
-        #         ndvi = (nir - red) / (nir + red + 1e-10)
-        #         gdd = sample['gdd']
-        #         np.save(f'weather_data/{tile.split("/")[-1]}_{crop_type}_gdd.npy', gdd)
-        #         np.save(f'weather_data/{tile.split("/")[-1]}_{crop_type}_ndvi.npy', ndvi)
-        #         np.save(f'weather_data/{tile.split("/")[-1]}_{crop_type}_pos.npy', sample['positions'])
-        #     if i == 1000:
-        #         break
-
-        # ndvis = np.nanmean(np.array(ndvis), axis=0)
-        # gdds = np.mean(gdds, axis=0)
-        # cloudy_pct = (total_cloudy / total_pixels)*100.0
-        # valid = cloudy_pct <= 80.0
-
-        # ndvis = ndvis[valid]
-        # # gdds = gdds[valid]
-        # positions = positions[valid]
-
-        # np.save(f'weather_data/{tile.split("/")[-1]}_{crop_type}_tmin_tmax.npy', gdds)
-        # # np.save(f'weather_data/{tile.split("/")[-1]}_{crop_type}_gdd.npy', gdds)
-        # np.save(f'weather_data/{tile.split("/")[-1]}_{crop_type}_ndvi.npy', ndvis)
-        # np.save(f'weather_data/{tile.split("/")[-1]}_{crop_type}_pos.npy', positions)
-        # ndvis = np.nanmean(np.array(ndvis), axis=0)
-
-        gdds = []
-        all_date_positions = []
-        for i, (path, date_positions, n_pixels, y, extra, gdd) in enumerate(dataset.samples):
-            gdds.append(gdd)
-            all_date_positions.append(date_positions)
-
-        gdds = np.array(gdds)
-        gdds = np.unique(gdds, axis=0)
-        np.save(f'weather_data/{tile.split("/")[-1]}_gdd.npy', gdds)
-        all_date_positions = np.array(all_date_positions)
-        all_date_positions = np.unique(all_date_positions, axis=0)
-        print(list(all_date_positions[0]))
-        # print(gdds.shape)
-
-        # print(len(dataset))
