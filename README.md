@@ -1,5 +1,5 @@
 # Thermal Positional Encoding
-Source code for the paper ["Generalized Classification of Satellite Image Time Series with Thermal Positional Encoding"](https://openaccess.thecvf.com/content/CVPR2022W/EarthVision/html/Nyborg_Generalized_Classification_of_Satellite_Image_Time_Series_With_Thermal_Positional_CVPRW_2022_paper.html) by Joachim Nyborg, Charlotte Pelletier, and Ira Assent, presented at EarthVision 2022.
+Source code for [Generalized Classification of Satellite Image Time Series with Thermal Positional Encoding](https://openaccess.thecvf.com/content/CVPR2022W/EarthVision/html/Nyborg_Generalized_Classification_of_Satellite_Image_Time_Series_With_Thermal_Positional_CVPRW_2022_paper.html) by Joachim Nyborg, Charlotte Pelletier, and Ira Assent, presented at EarthVision 2022.
 
 We consider the problem of generalizing crop classifiers using satellite image time series across European regions. Our proposed method, Thermal Positonal Encoding (TPE), incorporate thermal time instead of calendar time to account for temporal shifts of crop growth timelines. 
 
